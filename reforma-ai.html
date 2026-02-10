@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reforma AI - Visualiza tu reforma ANTES de hacerla</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --secondary: #ec4899;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --success: #10b981;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .hero {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 6vw, 4rem);
+            font-weight: 900;
+            margin-bottom: 15px;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            padding: 10px 25px;
+            border-radius: 30px;
+            margin-top: 20px;
+            font-weight: 600;
+        }
+
+        .main-card {
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+        }
+
+        .step {
+            margin-bottom: 50px;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .step-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .upload-zone {
+            border: 3px dashed #d1d5db;
+            border-radius: 20px;
+            padding: 60px 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f9fafb;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--primary);
+            background: #f0f4ff;
+        }
+
+        .upload-zone.has-image {
+            border-color: var(--success);
+            background: #f0fdf4;
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .upload-text {
+            font-size: 1.2rem;
+            color: #6b7280;
+            margin-bottom: 10px;
+        }
+
+        .upload-hint {
+            font-size: 0.95rem;
+            color: #9ca3af;
+        }
+
+        #preview {
+            max-width: 100%;
+            border-radius: 15px;
+            margin-top: 20px;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .effects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .effect-card {
+            background: linear-gradient(135deg, #f9fafb, #ffffff);
+            border: 3px solid transparent;
+            border-radius: 20px;
+            padding: 30px 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .effect-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        }
+
+        .effect-card.selected {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, #f0f4ff, #ffffff);
+            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.2);
+        }
+
+        .effect-icon {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+        }
+
+        .effect-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .effect-desc {
+            font-size: 0.95rem;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+
+        .color-selector {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 25px;
+        }
+
+        .color-chip {
+            width: 70px;
+            height: 70px;
+            border-radius: 15px;
+            cursor: pointer;
+            border: 4px solid transparent;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            font-size: 0.85rem;
+        }
+
+        .color-chip:hover {
+            transform: scale(1.1);
+        }
+
+        .color-chip.selected {
+            border-color: var(--dark);
+            box-shadow: 0 0 0 4px rgba(0,0,0,0.1);
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 25px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-size: 1.4rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 30px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .generate-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.4);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 60px 40px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 70px;
+            height: 70px;
+            border: 6px solid rgba(99, 102, 241, 0.2);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 25px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+
+        .loading-hint {
+            color: #6b7280;
+        }
+
+        .result {
+            display: none;
+            margin-top: 40px;
+        }
+
+        .result.active {
+            display: block;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .comparison-item {
+            background: #f9fafb;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .comparison-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .comparison-label {
+            padding: 20px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            background: white;
+        }
+
+        .comparison-label.before {
+            color: #6b7280;
+        }
+
+        .comparison-label.after {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 18px;
+            border-radius: 12px;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: var(--dark);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hero">
+            <h1>🏠 Reforma AI</h1>
+            <p>Visualiza cómo quedaría tu reforma ANTES de gastar miles de euros</p>
+            <span class="badge">✨ Sube tu foto y transforma tu espacio</span>
+        </div>
+
+        <div class="main-card">
+            <!-- PASO 1: Subir foto -->
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-number">1</div>
+                    <h2 class="step-title">Sube una foto de tu espacio</h2>
+                </div>
+                
+                <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+                    <div class="upload-icon">📸</div>
+                    <div class="upload-text">Haz clic para subir tu foto</div>
+                    <div class="upload-hint">Salón, habitación, escaleras, patio... cualquier espacio</div>
+                </div>
+                
+                <img id="preview" alt="Preview">
+                <input type="file" id="fileInput" accept="image/*">
+            </div>
+
+            <!-- PASO 2: Elegir efecto -->
+            <div class="step" id="step2" style="display: none;">
+                <div class="step-header">
+                    <div class="step-number">2</div>
+                    <h2 class="step-title">Elige qué reforma quieres ver</h2>
+                </div>
+
+                <div class="effects-grid">
+                    <div class="effect-card" onclick="selectEffect('lava')">
+                        <div class="effect-icon">🔥</div>
+                        <div class="effect-name">Suelo de Lava</div>
+                        <div class="effect-desc">Efecto volcánico con resina epoxi brillante</div>
+                    </div>
+
+                    <div class="effect-card" onclick="selectEffect('ocean')">
+                        <div class="effect-icon">🌊</div>
+                        <div class="effect-name">Suelo Océano 3D</div>
+                        <div class="effect-desc">Agua cristalina con arrecife coral</div>
+                    </div>
+
+                    <div class="effect-card" onclick="selectEffect('galaxy')">
+                        <div class="effect-icon">🌌</div>
+                        <div class="effect-name">Suelo Galaxia</div>
+                        <div class="effect-desc">Espacio profundo con estrellas</div>
+                    </div>
+
+                    <div class="effect-card" onclick="selectEffect('marble')">
+                        <div class="effect-icon">💎</div>
+                        <div class="effect-name">Mármol Luxury</div>
+                        <div class="effect-desc">Mármol blanco con vetas doradas</div>
+                    </div>
+
+                    <div class="effect-card" onclick="selectEffect('wood')">
+                        <div class="effect-icon">🪵</div>
+                        <div class="effect-name">Madera Premium</div>
+                        <div class="effect-desc">Parquet de roble natural</div>
+                    </div>
+
+                    <div class="effect-card" onclick="selectEffect('modern')">
+                        <div class="effect-icon">✨</div>
+                        <div class="effect-name">Moderno Minimal</div>
+                        <div class="effect-desc">Diseño minimalista contemporáneo</div>
+                    </div>
+                </div>
+
+                <div id="colorSelector" class="color-selector" style="display: none;"></div>
+
+                <button class="generate-btn" id="generateBtn" onclick="generateTransform()" disabled>
+                    ✨ Transformar mi espacio
+                </button>
+            </div>
+
+            <!-- Loading -->
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <div class="loading-text">Transformando tu espacio...</div>
+                <div class="loading-hint">Esto tardará 15-25 segundos</div>
+            </div>
+
+            <!-- Resultado -->
+            <div class="result" id="result">
+                <div class="step-header">
+                    <div class="step-number">3</div>
+                    <h2 class="step-title">¡Así quedaría tu reforma!</h2>
+                </div>
+
+                <div class="comparison">
+                    <div class="comparison-item">
+                        <img id="beforeImg" alt="Antes">
+                        <div class="comparison-label before">📷 ANTES (Tu foto)</div>
+                    </div>
+                    <div class="comparison-item">
+                        <img id="afterImg" alt="Después">
+                        <div class="comparison-label after">✨ DESPUÉS (Con reforma)</div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <a href="#" id="downloadBtn" class="btn btn-primary" download>
+                        📥 Descargar resultado
+                    </a>
+                    <button class="btn btn-secondary" onclick="reset()">
+                        🔄 Nueva transformación
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let uploadedImage = null;
+        let selectedEffect = null;
+        let selectedColor = null;
+
+        const effects = {
+            lava: {
+                colors: [
+                    { name: 'Naranja', value: 'orange', bg: 'linear-gradient(135deg, #ff4500, #ff8c00)' },
+                    { name: 'Rojo', value: 'red', bg: 'linear-gradient(135deg, #dc143c, #ff6347)' },
+                    { name: 'Azul', value: 'blue', bg: 'linear-gradient(135deg, #1e90ff, #00bfff)' }
+                ]
+            },
+            ocean: {
+                colors: [
+                    { name: 'Turquesa', value: 'turquoise', bg: 'linear-gradient(135deg, #40e0d0, #48d1cc)' },
+                    { name: 'Azul', value: 'blue', bg: 'linear-gradient(135deg, #0077be, #00a8cc)' },
+                    { name: 'Cristal', value: 'crystal', bg: 'linear-gradient(135deg, #e0f7fa, #b2ebf2)' }
+                ]
+            },
+            galaxy: {
+                colors: [
+                    { name: 'Púrpura', value: 'purple', bg: 'linear-gradient(135deg, #6a0dad, #9370db)' },
+                    { name: 'Azul', value: 'blue', bg: 'linear-gradient(135deg, #000080, #4169e1)' },
+                    { name: 'Rosa', value: 'pink', bg: 'linear-gradient(135deg, #ff1493, #ff69b4)' }
+                ]
+            },
+            marble: {
+                colors: [
+                    { name: 'Blanco', value: 'white', bg: 'linear-gradient(135deg, #f8f9fa, #ffffff)' },
+                    { name: 'Negro', value: 'black', bg: 'linear-gradient(135deg, #2c3e50, #34495e)' },
+                    { name: 'Verde', value: 'green', bg: 'linear-gradient(135deg, #2d5016, #3d6e1f)' }
+                ]
+            },
+            wood: {
+                colors: [
+                    { name: 'Roble', value: 'oak', bg: 'linear-gradient(135deg, #8B4513, #A0522D)' },
+                    { name: 'Nogal', value: 'walnut', bg: 'linear-gradient(135deg, #654321, #8B4513)' },
+                    { name: 'Claro', value: 'light', bg: 'linear-gradient(135deg, #D2B48C, #F5DEB3)' }
+                ]
+            },
+            modern: {
+                colors: [
+                    { name: 'Blanco', value: 'white', bg: 'linear-gradient(135deg, #f8f9fa, #ffffff)' },
+                    { name: 'Gris', value: 'gray', bg: 'linear-gradient(135deg, #495057, #6c757d)' },
+                    { name: 'Negro', value: 'black', bg: 'linear-gradient(135deg, #212529, #343a40)' }
+                ]
+            }
+        };
+
+        // Subir imagen
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                uploadedImage = event.target.result;
+                document.getElementById('preview').src = uploadedImage;
+                document.getElementById('preview').style.display = 'block';
+                document.getElementById('uploadZone').classList.add('has-image');
+                document.getElementById('step2').style.display = 'block';
+                
+                setTimeout(() => {
+                    document.getElementById('step2').scrollIntoView({ behavior: 'smooth' });
+                }, 300);
+            };
+            reader.readAsDataURL(file);
+        });
+
+        function selectEffect(effect) {
+            selectedEffect = effect;
+            selectedColor = null;
+            
+            // UI
+            document.querySelectorAll('.effect-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.target.closest('.effect-card').classList.add('selected');
+            
+            // Mostrar colores
+            const colorSelector = document.getElementById('colorSelector');
+            colorSelector.innerHTML = '';
+            colorSelector.style.display = 'flex';
+            
+            effects[effect].colors.forEach((color, i) => {
+                const chip = document.createElement('div');
+                chip.className = 'color-chip' + (i === 0 ? ' selected' : '');
+                chip.style.background = color.bg;
+                chip.textContent = color.name;
+                chip.onclick = () => selectColor(effect, color.value);
+                colorSelector.appendChild(chip);
+            });
+            
+            // Seleccionar primer color
+            selectedColor = effects[effect].colors[0].value;
+            checkReady();
+        }
+
+        function selectColor(effect, color) {
+            selectedColor = color;
+            document.querySelectorAll('.color-chip').forEach(chip => {
+                chip.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+            checkReady();
+        }
+
+        function checkReady() {
+            const btn = document.getElementById('generateBtn');
+            btn.disabled = !(uploadedImage && selectedEffect && selectedColor);
+        }
+
+        async function generateTransform() {
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('loading').classList.add('active');
+
+            const formData = new FormData();
+            formData.append('image', dataURLtoBlob(uploadedImage), 'image.jpg');
+            formData.append('effect', selectedEffect);
+            formData.append('color', selectedColor);
+
+            try {
+                const response = await fetch('http://localhost:3000/api/transform', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showResult(result.data);
+                } else {
+                    alert('Error: ' + result.error);
+                    document.getElementById('loading').classList.remove('active');
+                    document.getElementById('step2').style.display = 'block';
+                }
+            } catch (error) {
+                alert('Error de conexión: ' + error.message);
+                document.getElementById('loading').classList.remove('active');
+                document.getElementById('step2').style.display = 'block';
+            }
+        }
+
+        function showResult(data) {
+            document.getElementById('loading').classList.remove('active');
+            document.getElementById('result').classList.add('active');
+            
+            document.getElementById('beforeImg').src = uploadedImage;
+            document.getElementById('afterImg').src = 'http://localhost:3000' + data.transformedImage;
+            
+            const downloadBtn = document.getElementById('downloadBtn');
+            downloadBtn.href = 'http://localhost:3000' + data.transformedImage;
+            downloadBtn.download = `reforma-${selectedEffect}-${selectedColor}.png`;
+            
+            document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function reset() {
+            location.reload();
+        }
+
+        function dataURLtoBlob(dataURL) {
+            const arr = dataURL.split(',');
+            const mime = arr[0].match(/:(.*?);/)[1];
+            const bstr = atob(arr[1]);
+            let n = bstr.length;
+            const u8arr = new Uint8Array(n);
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new Blob([u8arr], { type: mime });
+        }
+    </script>
+</body>
+</html>

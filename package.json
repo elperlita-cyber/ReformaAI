@@ -1,0 +1,21 @@
+{
+  "name": "reforma-ai",
+  "version": "1.0.0",
+  "description": "Transforma tu foto con IA - Ve cómo quedaría tu reforma antes de hacerla",
+  "main": "server-reforma-ai.js",
+  "scripts": {
+    "start": "node server-reforma-ai.js",
+    "test": "node -e \"console.log('Reforma AI - Ready!')\""
+  },
+  "keywords": ["reforma", "ai", "transformacion", "interior-design"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "multer": "^1.4.5-lts.1",
+    "replicate": "^0.31.0",
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.1"
+  }
+}
